@@ -1,11 +1,15 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from . models import doctors
+
 
 # Create your views here.
 # def home(request):
 #     return HttpResponse("home")
 def home(request):
-    return render(request,'index.html')
+    obj=doctors.objects.all()
+    return render(request,'index.html',{'result':obj})
+
 # def addition(request):
 #     x=int(request.GET['num1'])
 #     y=int(request.GET['num2'])
