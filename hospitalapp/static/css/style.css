@@ -1,3 +1,23 @@
+
+/* Style the Register button */
+.btn {
+    background-color: black; /* Default button color */
+    color: white; /* Text color */
+    transition: background-color 0.3s ease; /* Smooth color transition */
+
+    /* Add padding, border, and other styling as needed */
+}
+
+/* Change button color on hover to match the navigation bar */
+.btn:hover {
+    background-color: #000000 ; /* Match the navigation bar color */
+    /* You can adjust the color code to match your navigation bar color */
+}
+
+
+
+
+
 body {
   font-family: 'Roboto', sans-serif;
   color: #0c0c0c;

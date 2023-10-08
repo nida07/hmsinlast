@@ -9,3 +9,10 @@ class doctors(models.Model):
     def __str__(self):
         return self.name
         #this function will used to show names in admin panel
+class frontimage(models.Model):
+    images=models.ImageField(upload_to='fimage')
+    names=models.CharField(max_length=250)
+    names2=models.CharField(max_length=250)
+    descs=models.TextField()
+    def __str__(self):
+        return self.names

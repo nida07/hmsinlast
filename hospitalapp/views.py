@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from . models import doctors
+from . models import doctors,frontimage
 
 
 # Create your views here.
@@ -8,7 +8,8 @@ from . models import doctors
 #     return HttpResponse("home")
 def home(request):
     obj=doctors.objects.all()
-    return render(request,'index.html',{'result':obj})
+    obj1=frontimage.objects.all()
+    return render(request,'index.html',{'result':obj,'fimage':obj1})
 
 # def addition(request):
 #     x=int(request.GET['num1'])

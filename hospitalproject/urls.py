@@ -24,7 +24,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     #admin is built in
     path('admin/', admin.site.urls),
-    path('',include('hospitalapp.urls'))
+    path('',include('hospitalapp.urls')),
+    path('credentials/',include('credentials.urls')),
 ]
 if settings.DEBUG:
     urlpatterns+=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
