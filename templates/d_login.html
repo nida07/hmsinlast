@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block body %}
+    <!-- login section -->
+    <section class="registration_section layout_padding">
+        <div class="container">
+            <div class="heading_container heading_center">
+                <h2>
+                    Hello Doctor
+                </h2>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div class="registration_form">
+                        <form action="login" method="post">
+                            {% csrf_token %}
+                            <!-- Username Details  -->
+                            <div class="form-group">
+                                <label for="uname">Username</label>
+                                <input type="text" class="form-control" id="uname" name="uname" placeholder="Enter your username" required>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                            </div>
+
+                            <!-- Login Button -->
+                            <div class="btn-box">
+                                <button type="submit" class="btn btn-login">Login</button>
+                            </div>
+                        </form>
+                        <!-- To view error messages (if any) -->
+                        <br>
+                        {% for msg in messages %}
+                            {{ msg }}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- end login section -->
+
+
+    <!-- Add your footer or other content here if needed -->
+
+{% endblock %}

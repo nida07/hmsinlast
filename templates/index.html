@@ -46,23 +46,40 @@
       <div class="header_top">
         <div class="container">
           <div class="contact_nav">
+
+
+
             {% if user.is_authenticated %}
-            <li>Hello {{user.username}}</li>
+<!--            <li>Hello {{user.username}}</li>-->
+            <a href="credentials/viewuser">
+                  <i class="fa fa-eye" aria-hidden="true"></i>
+                  <span>
+                    View user
+                  </span>
+                </a>
+<!--            <a href="credentials/base">-->
+<!--                  <i class="fa fa-eye" aria-hidden="true"></i>-->
+<!--                  <span>-->
+<!--                    View user-->
+<!--                  </span>-->
+<!--                </a>-->
             <a href="credentials/logout">
                   <i class="fa fa-user" aria-hidden="true"></i>
                   <span>
                     Logout
                   </span>
                 </a>
+
             {% else %}
-            <a href="credentials/login">
+            <a href="credentials/user_login">
                   <i class="fa fa-user" aria-hidden="true"></i>
                   <span>
                     Login
                   </span>
                 </a>
-                <a href="credentials/register">
-                  <i class="fa fa-user" aria-hidden="true"></i>
+<!--        -----------------------------------register    -->
+                <a href="credentials/user_register">
+                  <i class="fa fa-plus" aria-hidden="true"></i>
                   <span>
                     Sign Up
                   </span>

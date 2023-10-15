@@ -1,0 +1,134 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Basic -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Mobile Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!-- Site Metas -->
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+
+  <title>Mico</title>
+
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}" />
+
+  <!-- fonts style -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <!--owl slider stylesheet -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+
+  <!-- font awesome style -->
+  <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet" />
+  <!-- nice select -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" integrity="sha256-mLBIhmBvigTFWPSCtvdu6a76T+3Xyt+K571hupeFLg4=" crossorigin="anonymous" />
+  <!-- datepicker -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.css">
+  <!-- Custom styles for this template -->
+  <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+  <!-- responsive style -->
+  <link href="{% static 'css/responsive.css' %}" rel="stylesheet" />
+
+
+
+
+
+
+
+    <style>
+        .navbar {
+      background-color: #00c6a9; /* Change the background color as needed */
+      padding: 15px;
+      text-align: right;
+    }
+
+    .navbar a {
+      color: white; /* Change the link color as needed */
+      text-decoration: none;
+      margin: 0 20px; /* Adjust spacing between navigation items */
+      font-size: 18px;
+    }
+
+    .navbar a:hover {
+      color: #fff; /* Change the hover color as needed */
+    }
+    /* Style for the "Update" button */
+    .save-button {
+      display: inline-block;
+  background-color: black; /* Black background color */
+  color: white; /* Text color */
+  padding: 20px 20px; /* Adjust padding as needed */
+  border-radius: 5px; /* Rounded corners */
+  margin-right: 20px; /* Spacing between the button and table */
+  text-decoration: none; /* Remove underline for the link */
+  float:right;
+}
+
+.save-button:hover {
+  color: #00c6a9
+}
+
+
+
+    </style>
+
+</head>
+<body>
+        <div class="navbar">
+            <a href="#"></a>
+            <a href="#">Prescriptions</a>
+            <a href="#">Doctor</a>
+            <a href="#">Contact</a>
+            <a href="/credentials/logout">
+                  <i class="fa fa-user" aria-hidden="true"></i>
+                  <span>
+                    Logout
+                  </span>
+            </a>
+        </div>
+        <h2>Biometric Information Form</h2>
+
+
+    <!-- Add a form for editing table information -->
+        <form method="post" action="user_biometric_edit">
+        {% csrf_token %}
+
+        <!-- Height Input -->
+        <label for="height">Height (cm):</label>
+        <input type="number" id="height" name="height" required>
+        <br><br>
+
+        <!-- Weight Input -->
+        <label for="weight">Weight (kg):</label>
+        <input type="number" id="weight" name="weight" required>
+        <br><br>
+
+        <!-- Blood Pressure Input -->
+        <label for="bloodpressure">Blood Pressure:</label>
+        <input type="text" id="bloodpressure" name="bloodpressure" required>
+        <br><br>
+        <label for="bloodgroup">Blood Group:</label>
+        <input type="text" id="bloodgroup" name="bloodgroup" required>
+        <br><br>
+
+         <a href="{% url 'credentials:viewuser' %}" class=" save-button">
+            <i class="fa fa-save" aria-hidden="true"></i>
+            <span>Save </span>
+        </a>
+
+
+
+    </form>
+    <!-- Form ends here -->
+</body>
+</html>
+
+

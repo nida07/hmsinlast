@@ -16,3 +16,7 @@ class frontimage(models.Model):
     descs=models.TextField()
     def __str__(self):
         return self.names
+
+
+
+
