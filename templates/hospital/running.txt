@@ -1,0 +1,3 @@
+C:/Users/admin/AppData/Local/Programs/Python/Python39/python.exe d:/hospitalmanagement/hospitalmanagement/manage.py makemigrations
+C:/Users/admin/AppData/Local/Programs/Python/Python39/python.exe d:/hospitalmanagement/hospitalmanagement/manage.py migrate       
+C:/Users/admin/AppData/Local/Programs/Python/Python39/python.exe d:/hospitalmanagement/hospitalmanagement/manage.py runserver     

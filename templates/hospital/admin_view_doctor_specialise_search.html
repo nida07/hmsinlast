@@ -1,0 +1,78 @@
+{% extends 'hospital/admin_base.html' %}
+{% block content %}
+
+<head>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+  <style media="screen">
+    a:link {
+      text-decoration: none;
+    }
+
+    h6 {
+      text-align: center;
+    }
+
+    .row {
+      margin: 100px;
+    }
+
+<!--    -->
+   .search-box {
+      float: right;
+      margin-top: 20px;
+      margin-right: 20px;
+      width: 25%;
+    }
+    .search-button {
+      margin-left: 5px;
+  </style>
+</head>
+
+
+
+<div class="container">
+  <div class="search-box">
+        <form method="get" action=""> <!-- Replace 'search_view' with your actual search view URL -->
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search by Department" name="search">
+            <span class="input-group-btn">
+              <button class="btn btn-default search-button" type="submit">
+                <span class="glyphicon glyphicon-search"></span> Search
+              </button>
+            </span>
+          </div>
+        </form>
+      </div>
+    </div>
+<br><br><br>
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h6 class="panel-title">Department & Doctors</h6>
+    </div>
+<!--    -->
+
+
+    <table class="table table-hover" id="dev-table">
+      <thead>
+        <tr>
+          <th>Department</th>
+          <th>Doctor Name</th>
+          <th>Mobile</th>
+        </tr>
+      </thead>
+      {% for d in doctors %}
+      <tr>
+        <td>{{d.department}}</td>
+        <td> {{d.get_name}}</td>
+        <td>{{d.mobile}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+
+
+{% endblock content %}

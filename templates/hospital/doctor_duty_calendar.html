@@ -1,0 +1,78 @@
+{% extends 'hospital/doctor_base.html' %}
+{% load static %}
+{% block content %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Your Schedule</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+
+    <style type="text/css">
+        /* Your existing styles here */
+
+        .bg-c-orange {
+            background: linear-gradient(45deg, #ff8a66, #ffb199);
+        }
+
+        #calendar-container {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+
+<div class="container">
+    <h1>Your Schedule</h1>
+
+    <div class="form-row">
+        <div class="col-md-3">
+            <label for="datePicker">Select Date:</label>
+            <input type="date" id="datePicker" class="form-control" autocomplete="off">
+        </div>
+        <div class="col-md-3">
+            <label for="timePicker">Select Time Interval:</label>
+            <select id="timePicker" class="form-control">
+                <option value="00:00">12:00 AM - 1:00 AM</option>
+                <option value="01:00">1:00 AM - 2:00 AM</option>
+                <option value="02:00">2:00 AM - 3:00 AM</option>
+                <!-- Add more time intervals as needed -->
+            </select>
+        </div>
+    </div>
+
+    <!-- Calendar container for doctor to select working days and timings -->
+    <div id="calendar-container"></div>
+
+    <!-- FullCalendar library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@3.10.2/dist/fullcalendar.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.10.2/dist/fullcalendar.min.js"></script>
+
+    <!-- FullCalendar initialization script -->
+    <script>
+        $(document).ready(function () {
+            $('#calendar-container').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                defaultView: 'month', // Adjust the initial view as needed
+                selectable: true,
+                selectHelper: true,
+                select: function (start, end) {
+                    // Handle the selected date range
+                    alert('Selected: ' + start.format() + ' to ' + end.format());
+                    // You can customize this to save the selected schedule to a database or perform other actions
+                }
+            });
+        });
+    </script>
+</div>
+
+
+
+{% endblock content %}
