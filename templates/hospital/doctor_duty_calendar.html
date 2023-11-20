@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Your Schedule</title>
+    <title>Duty Calendar</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -24,8 +24,7 @@
 </head>
 
 <div class="container">
-    <h1>Your Schedule</h1>
-
+    <h1>Duty Calendar</h1>
     <div class="form-row">
         <div class="col-md-3">
             <label for="datePicker">Select Date:</label>
@@ -41,7 +40,7 @@
             </select>
         </div>
     </div>
-
+    <input type="hidden" id="hiddenValues" value="{{ holidays }}">
     <!-- Calendar container for doctor to select working days and timings -->
     <div id="calendar-container"></div>
 
@@ -54,6 +53,8 @@
     <!-- FullCalendar initialization script -->
     <script>
         $(document).ready(function () {
+            var holidays = JSON.parse('{{ holidays | escapejs }}');
+            console.log(holidays);
             $('#calendar-container').fullCalendar({
                 header: {
                     left: 'prev,next today',
@@ -63,6 +64,24 @@
                 defaultView: 'month', // Adjust the initial view as needed
                 selectable: true,
                 selectHelper: true,
+                dayRender: function (date, cell) {
+                    var dateString = date.format('YYYY-MM-DD');
+
+                    // Check if the current date matches any holiday date
+                    holidays.forEach(function(holiday) {
+                        if (dateString === holiday.date) {
+                            cell.css('background-color', '#F9F1F0');
+                            cell.append('<div class="holiday-text">' + holiday.title + '</div>');
+                        }
+                    });
+                    
+                    if (date.day() === 0) {
+                        cell.css('background-color', '#F9F1F0'); // Set background color of Sundays
+                    }
+                    if (date.isSame(moment(), 'day')) {
+                        cell.css('border', '2px solid #2E8BC0'); // Add blue border for today's date cell
+                    }
+                },
                 select: function (start, end) {
                     // Handle the selected date range
                     alert('Selected: ' + start.format() + ' to ' + end.format());

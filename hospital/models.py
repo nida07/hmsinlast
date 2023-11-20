@@ -11,12 +11,18 @@ departments=[('Cardiologist','Cardiologist'),
 ('Colon and Rectal Surgeons','Colon and Rectal Surgeons')
 ]
 class Doctor(models.Model):
-    user=models.OneToOneField(User,on_delete=models.CASCADE)
+
+    id = models.AutoField(primary_key=True)
+    user=models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic= models.ImageField(upload_to='profile_pic/DoctorProfilePic/',null=True,blank=True)
-    address = models.CharField(max_length=40)
-    mobile = models.CharField(max_length=20,null=True)
+    address = models.TextField()
+    mobile = models.CharField(max_length=10, null=True)
     department= models.CharField(max_length=50,choices=departments,default='Cardiologist')
-    status=models.BooleanField(default=False)
+
+    is_active=models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
     @property
     def get_name(self):
         return self.user.first_name+" "+self.user.last_name
@@ -29,14 +35,19 @@ class Doctor(models.Model):
 
 
 class Patient(models.Model):
-    user=models.OneToOneField(User,on_delete=models.CASCADE)
+
+    id = models.AutoField(primary_key=True)
+    user_id=models.OneToOneField(User, on_delete=models.CASCADE)
+
     profile_pic= models.ImageField(upload_to='profile_pic/PatientProfilePic/',null=True,blank=True)
     address = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20,null=False)
     symptoms = models.CharField(max_length=100,null=False)
-    assignedDoctorId = models.PositiveIntegerField(null=True)
-    admitDate=models.DateField(auto_now=True)
-    status=models.BooleanField(default=False)
+    
+    is_active=models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    
     @property
     def get_name(self):
         return self.user.first_name+" "+self.user.last_name
@@ -48,35 +59,78 @@ class Patient(models.Model):
 
 
 class Appointment(models.Model):
-    patientId=models.PositiveIntegerField(null=True)
-    doctorId=models.PositiveIntegerField(null=True)
-    patientName=models.CharField(max_length=40,null=True)
-    doctorName=models.CharField(max_length=40,null=True)
-    appointmentDate=models.DateField(auto_now=True)
-    description=models.TextField(max_length=500)
-    status=models.BooleanField(default=False)
+    id = models.AutoField(primary_key=True)
+
+    patient=models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="patient_appointments")
+    doctor=models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True, related_name="doctor_appointments")
+
+    appointment_date=models.DateTimeField(auto_now_add=True)
+    description=models.TextField(max_length=500, null=True, blank=True)
+    
+    is_active=models.BooleanField(default=True)
+    modified_at = models.DateTimeField(auto_now=True)
 
 
 
 class PatientDischargeDetails(models.Model):
-    patientId=models.PositiveIntegerField(null=True)
-    patientName=models.CharField(max_length=40)
-    assignedDoctorName=models.CharField(max_length=40)
-    address = models.CharField(max_length=40)
-    mobile = models.CharField(max_length=20,null=True)
-    symptoms = models.CharField(max_length=100,null=True)
 
-    admitDate=models.DateField(null=False)
-    releaseDate=models.DateField(null=False)
-    daySpent=models.PositiveIntegerField(null=False)
+    id = models.AutoField(primary_key=True)
+    appointment = models.OneToOneField(Appointment, on_delete=models.CASCADE, related_name="appointment_discharge")
 
-    roomCharge=models.PositiveIntegerField(null=False)
-    medicineCost=models.PositiveIntegerField(null=False)
-    doctorFee=models.PositiveIntegerField(null=False)
-    OtherCharge=models.PositiveIntegerField(null=False)
-    total=models.PositiveIntegerField(null=False)
+    admit_date=models.DateTimeField(null=False)
+    release_date=models.DateTimeField(null=True, blank=True)
+
+    room_charge=models.PositiveIntegerField(null=False)
+    medicine_Cost=models.PositiveIntegerField(null=False)
+    doctor_fee=models.PositiveIntegerField(null=False)
+    other_charge=models.PositiveIntegerField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def get_total_amount(self):
+        total = 0
+        total += int(self.room_charge) if self.room_charge else 0
+        total += int(self.medicine_Cost) if self.medicine_Cost else 0
+        total += int(self.doctor_fee) if self.doctor_fee else 0
+        total += int(self.other_charge) if self.other_charge else 0
+        return total
+    
+
+class DoctorLeave(models.Model):
+
+    id = models.AutoField(primary_key=True)
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="doctor_leave")
+
+    leave_day = models.DateField()
+    partial_leave = models.BooleanField(default=False)
+    partial_time_on_leave_start = models.TimeField(blank=True, null=True)
+    partial_time_on_leave_end = models.TimeField(blank=True, null=True)
+    reason = models.TextField(blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f'{self.doctor.user.first_name} is leave on {self.leave_day}'
+
+
+class Holidays(models.Model):
+
+    id = models.AutoField(primary_key=True)
+    date = models.DateField()
+    title = models.CharField(max_length=100)
+    is_public = models.BooleanField(default=False)
+    description = models.CharField(max_length=500, blank=True, null=True)
+
+    def __str__(self) -> str:
+        return f"{self.title}: {self.date}"
+
+
 # time scheduling
 class DoctorSchedule(models.Model):
+    id = models.AutoField(primary_key=True)
     date = models.DateField()
     time = models.TimeField()
     is_working = models.BooleanField(default=True)

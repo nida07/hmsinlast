@@ -10,10 +10,13 @@ from django.conf import settings
 from django.db.models import Q
 from .models import DoctorSchedule
 
+from hospital.models import Patient, Doctor, Appointment, PatientDischargeDetails, Holidays
+
 
 # Create your views here.
 def home_view(request):
     if request.user.is_authenticated:
+        print(request.user.is_authenticated)
         return HttpResponseRedirect('afterlogin')
     return render(request, 'hospital/index.html')
 
@@ -105,13 +108,14 @@ def doctor_signup_view(request):
     if request.method == 'POST':
         userForm = forms.DoctorUserForm(request.POST)
         doctorForm = forms.DoctorForm(request.POST, request.FILES)
+        print(userForm, doctorForm)
         if userForm.is_valid() and doctorForm.is_valid():
             user = userForm.save()
             user.set_password(user.password)
             user.save()
             doctor = doctorForm.save(commit=False)
             doctor.user = user
-            doctor = doctor.save()
+            doctor.save()
             my_doctor_group = Group.objects.get_or_create(name='DOCTOR')
             my_doctor_group[0].user_set.add(user)
         return HttpResponseRedirect('doctorlogin')
@@ -141,7 +145,7 @@ def patient_signup_view(request):
 
 # -----------for checking user is doctor , patient or admin
 def is_admin(user):
-    return user.groups.filter(name='ADMIN').exists()
+    return user.is_active==True and user.is_superuser==True
 
 
 def is_doctor(user):
@@ -157,7 +161,7 @@ def afterlogin_view(request):
     if is_admin(request.user):
         return redirect('admin-dashboard')
     elif is_doctor(request.user):
-        accountapproval = models.Doctor.objects.all().filter(user_id=request.user.id, status=True)
+        accountapproval = Doctor.objects.filter(user_id=request.user.id, is_active=True)
         if accountapproval:
             return redirect('doctor-dashboard')
         else:
@@ -177,26 +181,27 @@ def afterlogin_view(request):
 @user_passes_test(is_admin)
 def admin_dashboard_view(request):
     # for both table in admin dashboard
-    doctors = models.Doctor.objects.all().order_by('-id')
-    patients = models.Patient.objects.all().order_by('-id')
+    doctors = Doctor.objects.all()
+    patients = Patient.objects.all()
     # for three cards
-    doctorcount = models.Doctor.objects.all().filter(status=True).count()
-    pendingdoctorcount = models.Doctor.objects.all().filter(status=False).count()
+    appointments = Appointment.objects.all()
+    # doctorcount = models.Doctor.objects.all().filter(status=True).count()
+    # pendingdoctorcount = models.Doctor.objects.all().filter(status=False).count()
 
-    patientcount = models.Patient.objects.all().filter(status=True).count()
-    pendingpatientcount = models.Patient.objects.all().filter(status=False).count()
+    # patientcount = models.Patient.objects.all().filter(status=True).count()
+    # pendingpatientcount = models.Patient.objects.all().filter(status=False).count()
 
-    appointmentcount = models.Appointment.objects.all().filter(status=True).count()
-    pendingappointmentcount = models.Appointment.objects.all().filter(status=False).count()
+    # appointmentcount = models.Appointment.objects.all().filter(status=True).count()
+    # pendingappointmentcount = models.Appointment.objects.all().filter(status=False).count()
     mydict = {
-        'doctors': doctors,
-        'patients': patients,
-        'doctorcount': doctorcount,
-        'pendingdoctorcount': pendingdoctorcount,
-        'patientcount': patientcount,
-        'pendingpatientcount': pendingpatientcount,
-        'appointmentcount': appointmentcount,
-        'pendingappointmentcount': pendingappointmentcount,
+        'doctors': doctors.order_by('-id'),
+        'patients': patients.order_by('-id'),
+        'doctorcount': doctors.filter(is_active=True).count(),
+        'pendingdoctorcount': doctors.filter(is_active=False).count(),
+        'patientcount': patients.filter(is_active=True).count(),
+        'pendingpatientcount': patients.filter(is_active=False).count(),
+        'appointmentcount': appointments.filter(is_active=True).count(),
+        'pendingappointmentcount': appointments.filter(is_active=False).count(),
     }
     return render(request, 'hospital/admin_dashboard.html', context=mydict)
 
@@ -590,24 +595,25 @@ def reject_appointment_view(request, pk):
 @user_passes_test(is_doctor)
 def doctor_dashboard_view(request):
     # for three cards
-    patientcount = models.Patient.objects.all().filter(status=True, assignedDoctorId=request.user.id).count()
-    appointmentcount = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id).count()
-    patientdischarged = models.PatientDischargeDetails.objects.all().distinct().filter(
-        assignedDoctorName=request.user.first_name).count()
+    appointments = Appointment.objects.filter(is_active=True, doctor__user=request.user)
+    patients = Patient.objects.filter(is_active=True, patient_appointments__in=appointments)
+    # patientdischarged = PatientDischargeDetails.objects.filter(
+    #     assignedDoctorName=request.user.first_name).count()
+
 
     # for  table in doctor dashboard
-    appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id).order_by('-id')
+    appointments = appointments.order_by('-id')
     patientid = []
     for a in appointments:
         patientid.append(a.patientId)
-    patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid).order_by('-id')
-    appointments = zip(appointments, patients)
+    patients = patients.order_by('-id')
+    appointments_zip = zip(appointments, patients)
     mydict = {
-        'patientcount': patientcount,
-        'appointmentcount': appointmentcount,
-        'patientdischarged': patientdischarged,
-        'appointments': appointments,
-        'doctor': models.Doctor.objects.get(user_id=request.user.id),  # for profile picture of doctor in sidebar
+        'patientcount': patients.count(),
+        'appointmentcount': appointments.count(),
+        'patientdischarged': appointments.count(),
+        'appointments': appointments_zip,
+        'doctor': Doctor.objects.get(user_id=request.user),  # for profile picture of doctor in sidebar
     }
     return render(request, 'hospital/doctor_dashboard.html', context=mydict)
 
@@ -666,20 +672,31 @@ def doctor_duty_view(request):
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
 def doctor_view_appointment_view(request):
-    doctor = models.Doctor.objects.get(user_id=request.user.id)  # for profile picture of doctor in sidebar
-    appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id)
-    patientid = []
-    for a in appointments:
-        patientid.append(a.patientId)
-    patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
+    doctor = Doctor.objects.get(user=request.user)  # for profile picture of doctor in sidebar
+    appointments = Appointment.objects.filter(is_active=True, doctor=doctor)
+    patientid = appointments.values_list('patient', flat=True)
+    patients = Patient.objects.filter(is_active=True, id__in=patientid)
     appointments = zip(appointments, patients)
     return render(request, 'hospital/doctor_view_appointment.html', {'appointments': appointments, 'doctor': doctor})
 
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
 def doctor_duty_calendar(request):
-    doctor = models.Doctor.objects.get(user_id=request.user.id)
+    doctor = Doctor.objects.get(user_id=request.user.id)
     schedule = DoctorSchedule.objects.all()
+    holidays = Holidays.objects.all()
+    
+    holiday_list = []
+    for holiday in holidays:
+        holiday_list.append({
+            "date": holiday.date.strftime("%Y-%m-%d"),
+            "title": holiday.title,
+            "is_public": holiday.is_public
+        })
+
+    import json
+    data = json.dumps(holiday_list)
+    print(data)
     # for profile picture of doctor in sidebar
     # appointments = models.Appointment.objects.all().filter(status=True, doctorId=request.user.id)
     # patientid = []
@@ -687,7 +704,7 @@ def doctor_duty_calendar(request):
     #     patientid.append(a.patientId)
     # patients = models.Patient.objects.all().filter(status=True, user_id__in=patientid)
     # appointments = zip(appointments, patients)
-    return render(request, 'hospital/doctor_duty_calendar.html', {'doctor': doctor,'schedule':schedule})
+    return render(request, 'hospital/doctor_duty_calendar.html', {'doctor': doctor,'schedule':schedule, 'holidays':data})
 
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)

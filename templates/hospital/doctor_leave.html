@@ -2,9 +2,45 @@
 {% load static %}
 {% block content %}
 <body>
-
-<img src="{% static 'images/no.png' %}" alt="John" style="width:100%">
-
-
-</body>
+    <!-- Include any additional components or templates you have -->
+  
+    <!-- Leave Application Form -->
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="container register-form">
+        <div class="form">
+          <div class="note">
+            <p>Leave Application</p>
+          </div>
+  
+          <div class="form-content">
+            <div class="form-group">
+              <!-- Leave Day as Date Picker -->
+              {{ leaveForm.leave_day|add_class:"form-control" }}
+            </div>
+  
+            <div class="form-group">
+              <!-- Partial Leave as Checkbox -->
+              {{ leaveForm.partial_leave|add_class:"form-check-input" }}
+              <label class="form-check-label" for="{{ leaveForm.partial_leave.id_for_label }}">Partial Leave</label>
+            </div>
+  
+            <div class="form-group" id="partialTimeStart" style="display: none;">
+              <!-- Partial Time on Leave Start as Time Picker -->
+              {{ leaveForm.partial_time_on_leave_start|add_class:"form-control" }}
+            </div>
+  
+            <div class="form-group" id="partialTimeEnd" style="display: none;">
+              <!-- Partial Time on Leave End as Time Picker -->
+              {{ leaveForm.partial_time_on_leave_end|add_class:"form-control" }}
+            </div>
+  
+            <button type="submit" class="btnSubmit">Apply Leave</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  
+    <!-- Include any footer or navigation components -->
+  </body>
 {% endblock content %}
