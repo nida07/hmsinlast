@@ -43,6 +43,7 @@ class Patient(models.Model):
     address = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20,null=False)
     symptoms = models.CharField(max_length=100,null=False)
+
     
     is_active=models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -53,7 +54,7 @@ class Patient(models.Model):
         return self.user.first_name+" "+self.user.last_name
     @property
     def get_id(self):
-        return self.user.id
+        return self.user_id.id
     def __str__(self):
         return self.user.first_name+" ("+self.symptoms+")"
 
@@ -137,3 +138,8 @@ class DoctorSchedule(models.Model):
 
     def __str__(self):
         return f"{self.date} - {self.time} ({'Working' if self.is_working else 'Not Working'})"
+
+# class PasswordReset(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     token = models.CharField(max_length=100,blank=True)
+#     created_at = models.DateTimeField(auto_now_add=True)

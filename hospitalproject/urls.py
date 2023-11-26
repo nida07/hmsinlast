@@ -36,6 +36,7 @@ urlpatterns = [
     path('adminsignup', views.admin_signup_view),
     path('doctorsignup', views.doctor_signup_view, name='doctorsignup'),
     path('patientsignup', views.patient_signup_view),
+    # path('forgot-password', views.forgot_password, name='forgot_password'),
 
     path('adminlogin', LoginView.as_view(template_name='hospital/adminlogin.html')),
     path('doctorlogin', LoginView.as_view(template_name='hospital/doctorlogin.html')),

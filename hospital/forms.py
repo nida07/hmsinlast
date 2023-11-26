@@ -12,9 +12,32 @@ class AdminSigupForm(forms.ModelForm):
         widgets = {
         'password1': forms.PasswordInput()
         }
+    def clean_password(self):
+        password = self.cleaned_data['password']
+
+            # Custom password strength validation
+        if len(password) < 8:
+            raise forms.ValidationError("Password should be at least 8 characters long.")
+
+        if not any(char.isupper() for char in password):
+            raise forms.ValidationError("Password should contain at least one uppercase letter.")
+
+        if not any(char.isalnum() for char in password):
+            raise forms.ValidationError("Password should contain at least one alphanumeric character.")
+
+        return password
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+
+            # Check if the username already exists in the database
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("This username is already taken. Please choose a different one.")
+
+        return username
 
 
-#for student related form
+
 class DoctorUserForm(forms.ModelForm):
     class Meta:
         model=User
@@ -22,12 +45,35 @@ class DoctorUserForm(forms.ModelForm):
         widgets = {
         'password': forms.PasswordInput()
         }
+    # }
+    def clean_password(self):
+        password = self.cleaned_data['password']
+
+            # Custom password strength validation
+        if len(password) < 8:
+            raise forms.ValidationError("Password should be at least 8 characters long.")
+
+        if not any(char.isupper() for char in password):
+            raise forms.ValidationError("Password should contain at least one uppercase letter.")
+
+        if not any(char.isalnum() for char in password):
+            raise forms.ValidationError("Password should contain at least one alphanumeric character.")
+
+        return password
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+
+            # Check if the username already exists in the database
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("This username is already taken. Please choose a different one.")
+
+        return username
+
 class DoctorForm(forms.ModelForm):
     class Meta:
         model=models.Doctor
         fields=['address','mobile','department','is_active','profile_pic']
-
-
 
 #for patient related form
 
@@ -38,6 +84,31 @@ class PatientUserForm(forms.ModelForm):
         widgets = {
         'password': forms.PasswordInput()
         }
+    # }
+    def clean_password(self):
+        password = self.cleaned_data['password']
+
+            # Custom password strength validation
+        if len(password) < 8:
+            raise forms.ValidationError("Password should be at least 8 characters long.")
+
+        if not any(char.isupper() for char in password):
+            raise forms.ValidationError("Password should contain at least one uppercase letter.")
+
+        if not any(char.isalnum() for char in password):
+            raise forms.ValidationError("Password should contain at least one alphanumeric character.")
+
+        return password
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+
+            # Check if the username already exists in the database
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("This username is already taken. Please choose a different one.")
+
+        return username
+
 class PatientForm(forms.ModelForm):
     #this is the extrafield for linking patient and their assigend doctor
     #this will show dropdown __str__ method doctor model is shown on html so override it
@@ -70,4 +141,11 @@ class ContactusForm(forms.Form):
     Name = forms.CharField(max_length=30)
     Email = forms.EmailField()
     Message = forms.CharField(max_length=500,widget=forms.Textarea(attrs={'rows': 3, 'cols': 30}))
+class LeaveForm(forms.Form):
+    leave_day = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control'}))
+    partial_leave = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+    partial_time_on_leave_start = forms.TimeField(widget=forms.TimeInput(attrs={'class': 'form-control'}))
+    partial_time_on_leave_end = forms.TimeField(widget=forms.TimeInput(attrs={'class': 'form-control'}))
 
+# class ForgotPasswordForm(forms.Form):
+#     email = forms.EmailField()

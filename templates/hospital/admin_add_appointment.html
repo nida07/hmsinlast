@@ -67,6 +67,12 @@
             <div class="form-group">
               {% render_field appointmentForm.patientId class="form-control" placeholder="patient" %}
             </div>
+            <div class="form-group">
+              <input type="datetime-local" name="{{ appointmentForm.appointment_datetime.name }}" class="form-control" id="{{ appointmentForm.appointment_datetime.id_for_label }}" placeholder="Appointment Date and Time" value="{{ appointmentForm.appointment_datetime.value|default:'' }}" required>
+    {% if appointmentForm.appointment_datetime.errors %}
+          <div class="text-danger">{{ appointmentForm.appointment_datetime.errors|join:", " }}</div>
+    {% endif %}
+          </div>
 
           </div>
 
